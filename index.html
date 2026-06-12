@@ -35,11 +35,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .section-title{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:14px;padding-bottom:6px;border-bottom:2px solid var(--border);}
 .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:22px;}
 .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px;}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:22px;}
-@media(max-width:900px){.grid-4{grid-template-columns:1fr 1fr;}.grid-2{grid-template-columns:1fr;}}
+@media(max-width:900px){.grid-4{grid-template-columns:1fr 1fr;}.grid-3{grid-template-columns:1fr 1fr;}.grid-2{grid-template-columns:1fr;}}
 .kpi-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;border-left:4px solid var(--primary);}
 .kpi-card.green{border-left-color:var(--green);}.kpi-card.amber{border-left-color:var(--amber);}
 .kpi-card.red{border-left-color:var(--red);}.kpi-card.blue{border-left-color:var(--blue);}
+.kpi-card.purple{border-left-color:#7c3aed;}
 .kpi-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
 .kpi-value{font-size:28px;font-weight:800;color:var(--primary);line-height:1;}
 .kpi-sub{font-size:12px;color:var(--muted);margin-top:4px;}
@@ -85,6 +87,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .tag-cd{background:#fef3c7;color:#b45309;}.tag-pr{background:#f3e8ff;color:#7c3aed;}
 .info-box{background:#eff6ff;border-left:4px solid var(--blue);border-radius:6px;padding:12px 16px;font-size:13px;color:#1e40af;margin-bottom:16px;}
 .warn-box{background:#fff7ed;border-left:4px solid var(--amber);border-radius:6px;padding:12px 16px;font-size:13px;color:#92400e;margin-bottom:16px;}
+.alert-box{background:#fef2f2;border-left:4px solid var(--red);border-radius:6px;padding:12px 16px;font-size:13px;color:#991b1b;margin-bottom:16px;}
 .sim-controls{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:20px;}
 .sim-ctrl{display:flex;flex-direction:column;gap:4px;}
 .sim-ctrl label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;}
@@ -101,13 +104,17 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .spinner{width:48px;height:48px;border:5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px;}
 @keyframes spin{to{transform:rotate(360deg);}}
 #toast{position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 22px;border-radius:8px;font-size:13px;font-weight:700;color:#fff;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .4s;opacity:0;pointer-events:none;max-width:320px;}
+.chi-ring{display:flex;flex-direction:column;align-items:center;justify-content:center;width:90px;height:90px;border-radius:50%;border:6px solid var(--primary);margin:0 auto 8px;}
+.chi-val{font-size:22px;font-weight:900;color:var(--primary);}
+.chi-lbl{font-size:10px;color:var(--muted);font-weight:700;}
+.flag-row-red td{background:#fff1f1;}
+.flag-row-amber td{background:#fffbeb;}
 ::-webkit-scrollbar{width:6px;height:6px;}
 ::-webkit-scrollbar-track{background:#f1f1f1;}
 ::-webkit-scrollbar-thumb{background:#c1c1c1;border-radius:3px;}
 </style>
 </head>
 <body>
-
 <div id="loading-overlay">
   <div class="spinner"></div>
   <div style="font-size:16px;font-weight:700;">Loading from Google Sheets...</div>
@@ -153,6 +160,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   <button class="tab-btn" onclick="switchTab('t4',this)">📈 Trends (QoQ)</button>
   <button class="tab-btn" onclick="switchTab('t5',this)">🔮 Outlook / Simulator</button>
   <button class="tab-btn" onclick="switchTab('t6',this)">⚙️ Scoring Rules</button>
+  <button class="tab-btn" onclick="switchTab('t7',this)">🚨 Red Flags</button>
+  <button class="tab-btn" onclick="switchTab('t8',this)">🏥 Curriculum Health</button>
 </nav>
 
 <!-- TAB 1 -->
@@ -163,6 +172,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
     <div class="kpi-card blue"><div class="kpi-label">Programs Rated A or B</div><div class="kpi-value" id="kpi-ab">—</div><div class="kpi-sub">of 4 programs this quarter</div></div>
     <div class="kpi-card amber"><div class="kpi-label">Avg Overall Score</div><div class="kpi-value" id="kpi-avg-score">—</div><div class="kpi-sub">Across all active programs</div></div>
     <div class="kpi-card red"><div class="kpi-label">Actions Overdue</div><div class="kpi-value" id="kpi-overdue">—</div><div class="kpi-sub">Across all programs</div></div>
+  </div>
+  <div class="grid-3">
+    <div class="kpi-card purple"><div class="kpi-label">Avg Curriculum Health Index</div><div class="kpi-value" id="kpi-chi">—</div><div class="kpi-sub">Weighted CHI across programs</div></div>
+    <div class="kpi-card red"><div class="kpi-label">Assessment vs Nesting Gap</div><div class="kpi-value" id="kpi-gap">—</div><div class="kpi-sub">Programs with gap above 20%</div></div>
+    <div class="kpi-card amber"><div class="kpi-label">Content Review Overdue</div><div class="kpi-value" id="kpi-content-age">—</div><div class="kpi-sub">Modules not audited in 180+ days</div></div>
   </div>
   <div class="grid-2">
     <div class="card">
@@ -226,8 +240,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   <div class="section-title">Action Plan &amp; Gantt Chart</div>
   <div class="info-box">
     📊 <strong>Live data from Google Sheets.</strong>
-    To update any action, open your Google Sheet and edit the <strong>status</strong>, <strong>pct</strong>, or <strong>owner</strong> columns.
-    Then click <strong>🔄 Refresh Data</strong> in the top bar to pull the latest changes.
+    To update any action open your Google Sheet and edit the <strong>status</strong>, <strong>pct</strong>, or <strong>owner</strong> columns.
+    Then click <strong>🔄 Refresh Data</strong> to pull the latest changes.
   </div>
   <div class="filter-bar" style="margin-bottom:18px;border:1px solid var(--border);border-radius:8px;padding:10px 16px;">
     <label>Program</label>
@@ -270,21 +284,18 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
         <th style="width:90px;">Status</th>
         <th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th>
         <th style="width:45px;">%</th><th style="width:60px;">Impact</th>
+        <th style="width:90px;">Content Age</th>
       </tr></thead>
       <tbody id="t3-gantt-body"></tbody>
     </table>
   </div>
   <div class="card">
-    <div class="section-title">Action Detail Table
-      <span style="font-size:11px;font-weight:400;color:var(--muted);margin-left:10px;">
-        Edit in Google Sheets → click 🔄 Refresh Data to update
-      </span>
-    </div>
+    <div class="section-title">Action Detail Table</div>
     <table class="tbl">
       <thead><tr>
         <th>ID</th><th>Program</th><th>Pillar</th><th>Action</th>
         <th>Owner</th><th>Due</th><th>Status</th><th>Progress</th>
-        <th>Impact</th><th>Themes</th>
+        <th>Impact</th><th>Themes</th><th>Content Age</th>
       </tr></thead>
       <tbody id="t3-action-body"></tbody>
     </table>
@@ -441,6 +452,76 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   </div>
 </div>
 
+<!-- TAB 7 RED FLAGS -->
+<div class="tab-content" id="t7">
+  <div class="section-title">🚨 Red Flag &amp; Exception Report</div>
+  <div class="alert-box" id="t7-summary-box">Scanning programs for exceptions...</div>
+  <div class="grid-3">
+    <div class="kpi-card red"><div class="kpi-label">Critical Flags</div><div class="kpi-value" id="t7-critical">—</div><div class="kpi-sub">Require immediate action</div></div>
+    <div class="kpi-card amber"><div class="kpi-label">Warning Flags</div><div class="kpi-value" id="t7-warning">—</div><div class="kpi-sub">Monitor closely</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Programs Clear</div><div class="kpi-value" id="t7-clear">—</div><div class="kpi-sub">No active flags</div></div>
+  </div>
+  <div class="card">
+    <div class="section-title">Assessment vs Nesting Gap Flags</div>
+    <div class="info-box">Flags programs where training scores are high but floor performance gap exceeds 20%. This signals potential assessment validity issues.</div>
+    <table class="tbl">
+      <thead><tr><th>Program</th><th>Avg Training Score</th><th>30-Day Floor Score</th><th>Gap</th><th>Status</th><th>Action Required</th></tr></thead>
+      <tbody id="t7-gap-body"></tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="section-title">Content Age Flags</div>
+    <div class="info-box">Modules not audited or updated in over 180 days are automatically flagged for review.</div>
+    <table class="tbl">
+      <thead><tr><th>Program</th><th>Module</th><th>Last Audited</th><th>Days Since Audit</th><th>Flag</th><th>Recommended Action</th></tr></thead>
+      <tbody id="t7-age-body"></tbody>
+    </table>
+  </div>
+  <div class="card">
+    <div class="section-title">Low Pillar Score Flags</div>
+    <div class="info-box">Programs where any pillar is rated D or E are flagged as requiring priority intervention.</div>
+    <table class="tbl">
+      <thead><tr><th>Program</th><th>Pillar</th><th>Score</th><th>Rating</th><th>Flag Type</th><th>Recommended Action</th></tr></thead>
+      <tbody id="t7-pillar-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB 8 CURRICULUM HEALTH -->
+<div class="tab-content" id="t8">
+  <div class="section-title">🏥 Curriculum Health Index (CHI)</div>
+  <div class="info-box">
+    The Curriculum Health Index is a weighted composite score per program.
+    <strong>Weighting: 30% Knowledge Retention · 30% Trainer Delivery &amp; Confidence · 40% Post-Training Business Impact.</strong>
+    Higher scores indicate a healthier curriculum with stronger real-world performance outcomes.
+  </div>
+  <div class="grid-4" id="t8-chi-cards"></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="section-title">CHI Breakdown by Program</div>
+      <div style="position:relative;height:260px;"><canvas id="chart-chi-bar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="section-title">CHI Component Detail</div>
+      <table class="tbl">
+        <thead><tr><th>Program</th><th>Retention (30%)</th><th>Delivery (30%)</th><th>Business Impact (40%)</th><th>CHI Score</th><th>Rating</th></tr></thead>
+        <tbody id="t8-chi-table"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="section-title">CHI Trend — Quarter over Quarter</div>
+    <div style="position:relative;height:240px;"><canvas id="chart-chi-trend"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="section-title">CHI Improvement Recommendations</div>
+    <table class="tbl">
+      <thead><tr><th>Program</th><th>Weakest Component</th><th>Current</th><th>Target</th><th>Recommended Action</th><th>Est. CHI Uplift</th></tr></thead>
+      <tbody id="t8-chi-recs"></tbody>
+    </table>
+  </div>
+</div>
+
 <footer class="dash-footer">
   RCEF Curriculum Review Dashboard · Foundever Learning Experience · Cluster Rica Publishing and Communications · Confidential &amp; Proprietary · <span id="footer-year"></span>
 </footer>
@@ -469,6 +550,54 @@ const PROGRAMS={
     '2026 Q1':{p1:2,p2:17,p3:97,p4:'C'},'2025 Q4':{p1:5,p2:14,p3:92,p4:'C'},
     '2025 Q3':{p1:8,p2:12,p3:88,p4:'D'},'2025 Q2':{p1:12,p2:10,p3:85,p4:'D'}}}
 };
+
+// CHI DATA — static benchmark data per program
+const CHI_DATA={
+  NYP:{
+    retention:{curr:52,prev:{Q4:48,Q3:44,Q2:40}},
+    delivery:{curr:61,prev:{Q4:58,Q3:54,Q2:50}},
+    impact:{curr:44,prev:{Q4:40,Q3:36,Q2:32}},
+    nestingGap:28,trainingScore:88,floorScore:60
+  },
+  BREZ:{
+    retention:{curr:60,prev:{Q4:56,Q3:52,Q2:48}},
+    delivery:{curr:67,prev:{Q4:63,Q3:59,Q2:55}},
+    impact:{curr:55,prev:{Q4:51,Q3:47,Q2:43}},
+    nestingGap:18,trainingScore:85,floorScore:67
+  },
+  BELL:{
+    retention:{curr:72,prev:{Q4:68,Q3:64,Q2:60}},
+    delivery:{curr:74,prev:{Q4:70,Q3:66,Q2:62}},
+    impact:{curr:68,prev:{Q4:64,Q3:60,Q2:56}},
+    nestingGap:12,trainingScore:90,floorScore:78
+  },
+  TMOB:{
+    retention:{curr:78,prev:{Q4:74,Q3:70,Q2:66}},
+    delivery:{curr:80,prev:{Q4:76,Q3:72,Q2:68}},
+    impact:{curr:82,prev:{Q4:78,Q3:74,Q2:70}},
+    nestingGap:8,trainingScore:92,floorScore:84
+  }
+};
+
+// CONTENT AGE DATA — static per program module
+const CONTENT_AGE=[
+  {prog:'NYP',module:'Delivery Complaint Handling',lastAudit:'2025-05-10',days:260},
+  {prog:'NYP',module:'Account Inquiry Process',lastAudit:'2025-06-01',days:238},
+  {prog:'BREZ',module:'Billing Adjustment Policy',lastAudit:'2025-07-15',days:194},
+  {prog:'BREZ',module:'Service Cancellation Flow',lastAudit:'2025-09-01',days:146},
+  {prog:'BELL',module:'TSN Technical Troubleshooting',lastAudit:'2025-10-10',days:107},
+  {prog:'BELL',module:'Charges and Refund Policy',lastAudit:'2025-08-20',days:158},
+  {prog:'TMOB',module:'Uconnect Registration Flow',lastAudit:'2025-11-01',days:85},
+  {prog:'TMOB',module:'Subscription Management',lastAudit:'2025-12-01',days:55}
+];
+
+const CHI_RECS={
+  NYP:{weak:'Business Impact',curr:44,target:65,action:'Tie curriculum redesign directly to 30-day floor KPIs. Add post-training performance check-in at Day 7 and Day 30.',uplift:'+12 pts'},
+  BREZ:{weak:'Knowledge Retention',curr:60,target:75,action:'Replace end-of-module quizzes with spaced retrieval practice. Add weekly knowledge checks during nesting.',uplift:'+8 pts'},
+  BELL:{weak:'Business Impact',curr:68,target:80,action:'Map P2 skill execution activities directly to CSAT and FCR targets. Track score correlation quarterly.',uplift:'+6 pts'},
+  TMOB:{weak:'Nesting Gap',curr:8,target:5,action:'Already strong. Maintain current active learning ratio and continue mock call practice for registration flow.',uplift:'+3 pts'}
+};
+
 const RECOMMENDATIONS={
   NYP:[
     {pillar:'P1',text:'62% of training time is ILT/e-learning. Convert at least 30% of passive lecture blocks to Group Skill Builder or Individual Skill Execution activities.',themes:['Active Learning'],actions:2,priority:'High'},
@@ -495,11 +624,26 @@ const RECOMMENDATIONS={
     {pillar:'P4',text:'Apply complexity progression: General Inquiry to Registration to Subscription to Cancellation.',themes:['Progression'],actions:1,priority:'Medium'}
   ]
 };
+
 const THEME_CSS={'Active Learning':'tag-al','Skill Execution':'tag-sk','Call Driver Alignment':'tag-cd','Progression':'tag-pr'};
 const QTRS=['2025 Q2','2025 Q3','2025 Q4','2026 Q1'];
 const PROG_COLORS={NYP:'#2563eb',BREZ:'#e8501a',BELL:'#22a06b',TMOB:'#7c3aed'};
 const charts={};
 let ACTIONS=[];
+
+function calcCHI(pid){
+  const d=CHI_DATA[pid];
+  return+(d.retention.curr*0.3+d.delivery.curr*0.3+d.impact.curr*0.4).toFixed(1);
+}
+function chiRating(s){
+  if(s>=85)return'A';if(s>=75)return'B';if(s>=65)return'C';if(s>=50)return'D';return'E';
+}
+function contentAgeFlag(days){
+  if(days>=180)return{label:'🔴 Review Needed',cls:'heat-E'};
+  if(days>=120)return{label:'🟡 Due Soon',cls:'heat-C'};
+  return{label:'✅ Current',cls:'heat-A'};
+}
+
 function parseCSV(text){
   const lines=text.trim().split('\n');
   const headers=lines[0].split(',').map(h=>h.trim().replace(/^"|"$/g,'').toLowerCase());
@@ -525,6 +669,7 @@ function parseCSV(text){
     };
   }).filter(Boolean);
 }
+
 function loadFromSheets(){
   showOverlay(true);
   setConnStatus('loading','⏳ Loading from Google Sheets...');
@@ -561,6 +706,7 @@ function loadFromSheets(){
       showToast('Could not load Google Sheets — sample data shown','var(--red)');
     });
 }
+
 function loadSampleData(){
   ACTIONS=[
     {id:'A001',prog:'NYP',quarter:'2026 Q1',pillar:'P1',title:'Convert ILT blocks to Group Skill Builder activities',owner:'L. Santos',start:'2026-01-10',due:'2026-03-15',status:'In Progress',pct:40,impact:4,themes:['Active Learning','Skill Execution']},
@@ -586,6 +732,7 @@ function loadSampleData(){
   ];
   renderAll();
 }
+
 function showOverlay(show){document.getElementById('loading-overlay').style.display=show?'flex':'none';}
 function setConnStatus(type,msg){
   const el=document.getElementById('conn-status');if(!el)return;
@@ -648,7 +795,20 @@ function priorityPill(p){
   const cl={Critical:'#991b1b',High:'#9a3412',Medium:'#92400e',Low:'#166534'};
   return`<span style="padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;background:${bg[p]||'#f0fdf4'};color:${cl[p]||'#166534'}">${p}</span>`;
 }
-function renderAll(){renderExecutiveSummary();renderDrilldown();renderGantt();}
+function agePill(days){
+  if(days>=180)return`<span style="padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#fee2e2;color:#991b1b;">🔴 ${days}d</span>`;
+  if(days>=120)return`<span style="padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#fef3c7;color:#92400e;">🟡 ${days}d</span>`;
+  return`<span style="padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;background:#dcfce7;color:#166534;">✅ ${days}d</span>`;
+}
+
+function renderAll(){
+  renderExecutiveSummary();
+  renderDrilldown();
+  renderGantt();
+  renderRedFlags();
+  renderCHI();
+}
+
 function switchTab(id,btn){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -659,7 +819,10 @@ function switchTab(id,btn){
   if(id==='t3')renderGantt();
   if(id==='t4')renderTrends();
   if(id==='t5')runSimulator();
+  if(id==='t7')renderRedFlags();
+  if(id==='t8')renderCHI();
 }
+
 function applyGlobalFilter(){
   const qtr=document.getElementById('gf-quarter').value;
   const prog=document.getElementById('gf-program').value;
@@ -668,6 +831,7 @@ function applyGlobalFilter(){
   document.getElementById('t1-qtr').textContent=qtr;
   renderExecutiveSummary();
 }
+
 function renderExecutiveSummary(){
   const qtr=document.getElementById('gf-quarter').value;
   const prevQtr=QTRS[QTRS.indexOf(qtr)-1]||null;
@@ -686,6 +850,16 @@ function renderExecutiveSummary(){
   document.getElementById('kpi-avg-score').textContent=count?(totalScore/count).toFixed(1):'—';
   document.getElementById('kpi-ab').textContent=abCount+' / '+count;
   document.getElementById('kpi-overdue').textContent=ACTIONS.filter(a=>getStatus(a)==='Overdue').length;
+
+  // CHI KPIs
+  const chiScores=Object.keys(PROGRAMS).map(pid=>calcCHI(pid));
+  const avgCHI=(chiScores.reduce((a,b)=>a+b,0)/chiScores.length).toFixed(1);
+  document.getElementById('kpi-chi').textContent=avgCHI;
+  const gapPrograms=Object.keys(PROGRAMS).filter(pid=>CHI_DATA[pid].nestingGap>20).length;
+  document.getElementById('kpi-gap').textContent=gapPrograms+' / 4';
+  const overdueContent=CONTENT_AGE.filter(c=>c.days>=180).length;
+  document.getElementById('kpi-content-age').textContent=overdueContent;
+
   document.getElementById('t1-ranking-body').innerHTML=rows.map((r,i)=>`
     <tr>
       <td><strong>${i+1}</strong></td><td><strong>${r.prog}</strong></td>
@@ -712,6 +886,7 @@ function renderExecutiveSummary(){
       scales:{x:{beginAtZero:true,grid:{color:'#eee'}},y:{grid:{display:false}}}}
   });
 }
+
 function renderDrilldown(){
   const pid=document.getElementById('t2-prog').value;
   const qtr=document.getElementById('gf-quarter').value;
@@ -767,6 +942,7 @@ function renderDrilldown(){
       plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}
   });
 }
+
 function renderGantt(){
   const fp=document.getElementById('t3-prog').value;
   const fl=document.getElementById('t3-pillar').value;
@@ -788,6 +964,14 @@ function renderGantt(){
   document.getElementById('t3-due30').textContent=due30;
   document.getElementById('kpi-overdue').textContent=ACTIONS.filter(a=>getStatus(a)==='Overdue').length;
   const base=new Date('2026-01-01'),totalDays=180;
+
+  // match content age to action program
+  function getProgAge(prog){
+    const items=CONTENT_AGE.filter(c=>c.prog===prog);
+    if(!items.length)return 0;
+    return Math.max(...items.map(c=>c.days));
+  }
+
   document.getElementById('t3-gantt-body').innerHTML=acts.map(a=>{
     const st=getStatus(a);
     const sd=Math.max(0,(new Date(a.start)-base)/864e5);
@@ -796,6 +980,7 @@ function renderGantt(){
     const wp=Math.max(((ed-sd)/totalDays*100),1).toFixed(1);
     const bc=st==='Complete'?'g-complete':st==='Overdue'?'g-overdue':st==='In Progress'?'g-progress':st==='Blocked'?'g-due-soon':'g-notstart';
     const pn=PROGRAMS[a.prog]?.name?.split(' ')[0]||a.prog;
+    const age=getProgAge(a.prog);
     return`<tr>
       <td style="font-size:12px;line-height:1.3;">
         <span style="font-size:10px;color:var(--muted);">${pn}</span><br>
@@ -811,10 +996,13 @@ function renderGantt(){
       </td>
       <td style="text-align:center;font-weight:700;">${a.pct}%</td>
       <td style="text-align:center;font-size:12px;">${'★'.repeat(a.impact)}${'☆'.repeat(5-a.impact)}</td>
+      <td style="text-align:center;">${agePill(age)}</td>
     </tr>`;
   }).join('');
-  document.getElementById('t3-action-body').innerHTML=acts.map(a=>`
-    <tr>
+
+  document.getElementById('t3-action-body').innerHTML=acts.map(a=>{
+    const age=getProgAge(a.prog);
+    return`<tr>
       <td style="font-size:11px;font-weight:700;">${a.id}</td>
       <td style="font-size:11px;">${PROGRAMS[a.prog]?.name?.split(' ').slice(0,2).join(' ')||a.prog}</td>
       <td><span class="r-badge" style="background:var(--primary);color:#fff;font-size:10px;">${a.pillar}</span></td>
@@ -825,8 +1013,178 @@ function renderGantt(){
       <td>${progressBar(a.pct)}</td>
       <td style="text-align:center;font-weight:700;">${a.impact}</td>
       <td>${a.themes.map(themeTag).join('')}</td>
-    </tr>`).join('');
+      <td>${agePill(age)}</td>
+    </tr>`;
+  }).join('');
 }
+
+function renderRedFlags(){
+  const qtr=document.getElementById('gf-quarter').value;
+  let critical=0,warning=0,clear=0;
+  const flaggedProgs=new Set();
+
+  // Gap table
+  const gapRows=Object.keys(PROGRAMS).map(pid=>{
+    const d=CHI_DATA[pid];
+    const gap=d.nestingGap;
+    const isCrit=gap>20,isWarn=gap>10&&gap<=20;
+    if(isCrit){critical++;flaggedProgs.add(pid);}
+    else if(isWarn){warning++;flaggedProgs.add(pid);}
+    const flagLbl=isCrit?'🔴 Critical Gap':isWarn?'🟡 Monitor':'✅ Acceptable';
+    const action=isCrit?'Review assessment validity. Add scenario-based assessments that mirror floor conditions.':
+                 isWarn?'Monitor for next quarter. Validate assessment items against nesting data.':'No action needed.';
+    return`<tr class="${isCrit?'flag-row-red':isWarn?'flag-row-amber':''}">
+      <td><strong>${PROGRAMS[pid].name}</strong></td>
+      <td style="text-align:center;font-weight:700;">${d.trainingScore}%</td>
+      <td style="text-align:center;font-weight:700;">${d.floorScore}%</td>
+      <td style="text-align:center;font-weight:800;color:${isCrit?'var(--red)':isWarn?'var(--amber)':'var(--green)'};">${gap}%</td>
+      <td>${flagLbl}</td>
+      <td style="font-size:12px;">${action}</td>
+    </tr>`;
+  }).join('');
+
+  // Content age table
+  const ageRows=CONTENT_AGE.map(c=>{
+    const f=contentAgeFlag(c.days);
+    if(c.days>=180){critical++;flaggedProgs.add(c.prog);}
+    else if(c.days>=120){warning++;}
+    const action=c.days>=180?'Immediately schedule content audit. Assign owner and set due date within 30 days.':
+                 c.days>=120?'Schedule review in next sprint. Validate for product or policy changes.':'No action needed.';
+    return`<tr class="${c.days>=180?'flag-row-red':c.days>=120?'flag-row-amber':''}">
+      <td><strong>${PROGRAMS[c.prog]?.name||c.prog}</strong></td>
+      <td>${c.module}</td>
+      <td style="font-size:11px;">${c.lastAudit}</td>
+      <td style="text-align:center;">${agePill(c.days)}</td>
+      <td>${f.label}</td>
+      <td style="font-size:12px;">${action}</td>
+    </tr>`;
+  }).join('');
+
+  // Low pillar flags
+  const pillarRows=[];
+  Object.keys(PROGRAMS).forEach(pid=>{
+    const d=getQtrData(pid,qtr);if(!d)return;
+    const s=calcScores(d);
+    const checks=[
+      {pillar:'P1',score:s.p1n,rating:s.p1r},
+      {pillar:'P2',score:s.p2n,rating:s.p2r},
+      {pillar:'P3',score:s.p3n,rating:s.p3r},
+      {pillar:'P4',score:s.p4n,rating:s.p4r}
+    ];
+    checks.forEach(c=>{
+      if(c.rating==='D'||c.rating==='E'){
+        const isCrit=c.rating==='E';
+        if(isCrit){critical++;}else{warning++;}
+        flaggedProgs.add(pid);
+        const action=isCrit?'Immediate redesign required. Escalate to Learning Manager for sprint planning.':
+                     'Schedule redesign within this quarter. Review recommendations in Program Drilldown tab.';
+        pillarRows.push(`<tr class="${isCrit?'flag-row-red':'flag-row-amber'}">
+          <td><strong>${PROGRAMS[pid].name}</strong></td>
+          <td><span class="r-badge" style="background:var(--primary);color:#fff;font-size:10px;">${c.pillar}</span></td>
+          <td style="text-align:center;font-weight:700;">${c.score.toFixed(0)}</td>
+          <td>${ratingBadge(c.rating)}</td>
+          <td>${isCrit?'🔴 Critical':'🟡 Warning'}</td>
+          <td style="font-size:12px;">${action}</td>
+        </tr>`);
+      }
+    });
+  });
+
+  clear=4-flaggedProgs.size;
+  document.getElementById('t7-critical').textContent=critical;
+  document.getElementById('t7-warning').textContent=warning;
+  document.getElementById('t7-clear').textContent=Math.max(0,clear);
+  document.getElementById('t7-summary-box').innerHTML=
+    `🚨 <strong>Exception Scan Complete — ${qtr}</strong> &nbsp;|&nbsp;
+    <strong style="color:var(--red)">${critical} Critical</strong> flags require immediate action &nbsp;|&nbsp;
+    <strong style="color:var(--amber)">${warning} Warning</strong> flags need monitoring &nbsp;|&nbsp;
+    <strong style="color:var(--green)">${Math.max(0,clear)} programs</strong> fully clear`;
+  document.getElementById('t7-gap-body').innerHTML=gapRows;
+  document.getElementById('t7-age-body').innerHTML=ageRows;
+  document.getElementById('t7-pillar-body').innerHTML=pillarRows.join('');
+}
+
+function renderCHI(){
+  const pids=Object.keys(PROGRAMS);
+  const chiScores=pids.map(pid=>calcCHI(pid));
+
+  // KPI cards
+  document.getElementById('t8-chi-cards').innerHTML=pids.map((pid,i)=>{
+    const chi=chiScores[i],r=chiRating(chi);
+    const bc=r==='A'?'green':r==='B'?'blue':r==='C'?'amber':'red';
+    return`<div class="kpi-card ${bc}">
+      <div class="kpi-label">${PROGRAMS[pid].name.split(' ').slice(0,2).join(' ')}</div>
+      <div class="kpi-value">${chi}</div>
+      <div class="kpi-sub">CHI Rating: ${r} &nbsp; ${ratingBadge(r)}</div>
+    </div>`;
+  }).join('');
+
+  // CHI table
+  document.getElementById('t8-chi-table').innerHTML=pids.map(pid=>{
+    const d=CHI_DATA[pid],chi=calcCHI(pid),r=chiRating(chi);
+    return`<tr>
+      <td><strong>${PROGRAMS[pid].name}</strong></td>
+      <td style="text-align:center;">${d.retention.curr} <span style="font-size:10px;color:var(--muted);">×0.3</span></td>
+      <td style="text-align:center;">${d.delivery.curr} <span style="font-size:10px;color:var(--muted);">×0.3</span></td>
+      <td style="text-align:center;">${d.impact.curr} <span style="font-size:10px;color:var(--muted);">×0.4</span></td>
+      <td style="text-align:center;font-weight:800;">${chi}</td>
+      <td style="text-align:center;">${ratingBadge(r)}</td>
+    </tr>`;
+  }).join('');
+
+  // CHI recommendations
+  document.getElementById('t8-chi-recs').innerHTML=pids.map(pid=>{
+    const rec=CHI_RECS[pid];
+    return`<tr>
+      <td><strong>${PROGRAMS[pid].name}</strong></td>
+      <td><strong>${rec.weak}</strong></td>
+      <td style="text-align:center;font-weight:700;">${rec.curr}</td>
+      <td style="text-align:center;font-weight:700;color:var(--green);">${rec.target}</td>
+      <td style="font-size:12px;line-height:1.5;">${rec.action}</td>
+      <td style="text-align:center;font-weight:800;color:var(--accent);">${rec.uplift}</td>
+    </tr>`;
+  }).join('');
+
+  // CHI bar chart
+  destroyChart('chart-chi-bar');
+  charts['chart-chi-bar']=new Chart(document.getElementById('chart-chi-bar'),{
+    type:'bar',
+    data:{
+      labels:pids.map(p=>PROGRAMS[p].name.split(' ').slice(0,2).join(' ')),
+      datasets:[
+        {label:'Retention (30%)',data:pids.map(p=>CHI_DATA[p].retention.curr),backgroundColor:'#dbeafe',borderColor:'#2563eb',borderWidth:2,borderRadius:4},
+        {label:'Delivery (30%)',data:pids.map(p=>CHI_DATA[p].delivery.curr),backgroundColor:'#dcfce7',borderColor:'#16a34a',borderWidth:2,borderRadius:4},
+        {label:'Business Impact (40%)',data:pids.map(p=>CHI_DATA[p].impact.curr),backgroundColor:'#fef3c7',borderColor:'#d97706',borderWidth:2,borderRadius:4}
+      ]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},
+      scales:{x:{grid:{display:false}},y:{min:0,max:100,grid:{color:'#eee'}}}}
+  });
+
+  // CHI trend chart
+  destroyChart('chart-chi-trend');
+  const qLabels=['2025 Q2','2025 Q3','2025 Q4','2026 Q1'];
+  const chiTrendDS=pids.map(pid=>{
+    const d=CHI_DATA[pid];
+    const trendData=[
+      +(d.retention.prev.Q2*0.3+d.delivery.prev.Q2*0.3+d.impact.prev.Q2*0.4).toFixed(1),
+      +(d.retention.prev.Q3*0.3+d.delivery.prev.Q3*0.3+d.impact.prev.Q3*0.4).toFixed(1),
+      +(d.retention.prev.Q4*0.3+d.delivery.prev.Q4*0.3+d.impact.prev.Q4*0.4).toFixed(1),
+      calcCHI(pid)
+    ];
+    return{label:PROGRAMS[pid].name.split(' ').slice(0,2).join(' '),
+      data:trendData,borderColor:PROG_COLORS[pid],backgroundColor:PROG_COLORS[pid]+'22',
+      tension:.4,fill:false,pointRadius:5};
+  });
+  charts['chart-chi-trend']=new Chart(document.getElementById('chart-chi-trend'),{
+    type:'line',data:{labels:qLabels,datasets:chiTrendDS},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},
+      scales:{y:{min:0,max:100,grid:{color:'#eee'}},x:{grid:{display:false}}}}
+  });
+}
+
 function renderTrends(){renderOverallTrend();renderPillarTrend();renderMigrationTable();renderActionTrend();}
 function renderOverallTrend(){
   destroyChart('chart-trend-overall');
